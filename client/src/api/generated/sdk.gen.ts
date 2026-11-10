@@ -19,12 +19,17 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 };
 
 /**
- * Предстоящие бронирования всех типов (владелец)
+ * Предстоящие бронирования всех типов (владелец).
+ * «Предстоящие» — по дате: все брони с сегодняшней даты включительно (Asia/Almaty); уже начавшиеся сегодня входят в список.
+ * Сортировка — по дате и времени встречи, ближайшие выше.
  */
 export const listBookings = <ThrowOnError extends boolean = false>(options?: Options<ListBookingsData, ThrowOnError>): RequestResult<ListBookingsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListBookingsResponses, unknown, ThrowOnError>({ url: '/api/bookings', ...options });
 
 /**
- * Создать бронирование (гость)
+ * Создать бронирование (гость). Проверка пересечения и создание выполняются атомарно.
+ * 400 — слот не предусмотрен расписанием или невалидные поля: «Некорректная дата: ожидается формат YYYY-MM-DD.», «Дата вне окна бронирования: запись открыта на 14 дней, начиная с завтрашнего дня.», «Некорректное время начала: ожидается формат HH:mm.», «Выбранное время недоступно для записи.», «Имя обязательно.», «Некорректный email.»
+ * 404 — «Тип встречи не найден.»
+ * 409 — слот валиден по расписанию, но пересекается с существующей бронью: «Это время уже занято. Выберите другое время.»
  */
 export const createBooking = <ThrowOnError extends boolean = false>(options: Options<CreateBookingData, ThrowOnError>): RequestResult<CreateBookingResponses, CreateBookingErrors, ThrowOnError> => (options.client ?? client).post<CreateBookingResponses, CreateBookingErrors, ThrowOnError>({
     url: '/api/bookings',
@@ -41,7 +46,7 @@ export const createBooking = <ThrowOnError extends boolean = false>(options: Opt
 export const listEventTypes = <ThrowOnError extends boolean = false>(options?: Options<ListEventTypesData, ThrowOnError>): RequestResult<ListEventTypesResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListEventTypesResponses, unknown, ThrowOnError>({ url: '/api/event-types', ...options });
 
 /**
- * Создать тип встречи (владелец)
+ * Создать тип встречи (владелец). 400 — невалидные поля: «Название обязательно.», «Название не должно превышать 100 символов.», «Описание не должно превышать 500 символов.», «Длительность должна быть 30, 60, 90 или 120 минут.»
  */
 export const createEventType = <ThrowOnError extends boolean = false>(options: Options<CreateEventTypeData, ThrowOnError>): RequestResult<CreateEventTypeResponses, CreateEventTypeErrors, ThrowOnError> => (options.client ?? client).post<CreateEventTypeResponses, CreateEventTypeErrors, ThrowOnError>({
     url: '/api/event-types',
@@ -53,7 +58,10 @@ export const createEventType = <ThrowOnError extends boolean = false>(options: O
 });
 
 /**
- * Свободные слоты типа на дату (внутри окна 14 дней)
+ * Свободные слоты типа на дату (внутри окна 14 дней с завтрашнего дня).
+ * Запрос на выходной (сб/вс) — пустой список, не ошибка.
+ * 400 — «Некорректная дата: ожидается формат YYYY-MM-DD.», «Дата вне окна бронирования: запись открыта на 14 дней, начиная с завтрашнего дня.», «Параметр date обязателен.»
+ * 404 — «Тип встречи не найден.»
  */
 export const getEventTypeSlots = <ThrowOnError extends boolean = false>(options: Options<GetEventTypeSlotsData, ThrowOnError>): RequestResult<GetEventTypeSlotsResponses, GetEventTypeSlotsErrors, ThrowOnError> => (options.client ?? client).get<GetEventTypeSlotsResponses, GetEventTypeSlotsErrors, ThrowOnError>({ url: '/api/event-types/{id}/slots', ...options });
 
