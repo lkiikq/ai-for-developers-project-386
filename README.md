@@ -58,10 +58,13 @@ contract/main.tsp ──compile──> contract/openapi.yaml ──generate─�
 3. Реализуем/обновляем эндпоинты на бэкенде — **сервер обязан соответствовать `openapi.yaml`**.
 4. Генерируем клиентский SDK: `cd client && npm run generate:api` → обновляется `client/src/api/generated/`.
 
+Пункты 2 и 4 одним вызовом из корня: `mise run generate`.
+
 Правила:
 
-- `contract/openapi.yaml` и `client/src/api/generated/` — **сгенерированные файлы, руками не редактируются**;
-- фронтенд обращается к API **только через сгенерированный SDK** — никаких ручных `fetch('/api/...')` в компонентах;
+- `contract/openapi.yaml` и `client/src/api/generated/` — **сгенерированные файлы, руками не редактируются** — только через `mise run generate`;
+- генератора артефактов для сервера (Express) нет — бэкенд реализуется по `openapi.yaml` вручную;
+- фронтенд обращается к API **только через сгенерированный SDK** — никаких ручных `fetch('/api/...')` в компонентах (запрет закреплён в ESLint-правиле клиента);
 - несовпадение бэкенда со спецификацией считается багом.
 
 ## Архитектура и структура проекта
@@ -298,8 +301,9 @@ Booking = { id, eventTypeId, date, startTime, endTime, guestName, guestEmail }
 | Команда | Где | Что делает |
 | --- | --- | --- |
 | `mise run install` | корень | Установить зависимости всех пакетов |
-| `mise run check` | корень | **Все проверки**: линтеры + тесты + сборка + соответствие сгенерированных файлов контракту. Та же команда запускается в GitHub Actions на каждый push |
-| `mise run lint` / `mise run test` / `mise run build` | корень | Отдельные проверки |
+| `mise run check` | корень | **Все проверки**: генерация из чистого состояния → линтеры → типы → тесты → сборка → сверка генерируемых путей с git. Та же команда запускается в GitHub Actions на каждый push |
+| `mise run generate` | корень | Вся генерация одним вызовом: TypeSpec → `contract/openapi.yaml` → SDK фронтенда |
+| `mise run lint` / `mise run typecheck` / `mise run test` / `mise run build` | корень | Отдельные проверки |
 | `mise daemons start` | корень | Dev-серверы фоном (бэкенд :3000, фронтенд :5173) |
 | `npm run compile` | `contract/` | TypeSpec → `contract/openapi.yaml` |
 | `npm run generate:api` | `client/` | OpenAPI → SDK в `client/src/api/generated/` |
@@ -361,7 +365,7 @@ Booking = { id, eventTypeId, date, startTime, endTime, guestName, guestEmail }
 ## Правила для ИИ-агентов
 
 1. **Хранилище только в памяти** — см. раздел «Хранение данных». Никаких БД и файловых сохранений.
-2. **Contract-first:** любое изменение API начинается с правки `contract/main.tsp`, затем `npm run compile` → реализация на бэкенде → `npm run generate:api`. Сгенерированные файлы (`openapi.yaml`, `client/src/api/generated/`) руками не править.
+2. **Contract-first:** любое изменение API начинается с правки `contract/main.tsp`, затем `mise run generate` (или `npm run compile` + `npm run generate:api`) → реализация на бэкенде. Сгенерированные файлы (`contract/openapi.yaml`, `client/src/api/generated/`) руками не править — их меняет только генерация; расхождение ловит `mise run check`.
 3. Фронтенд ходит в API **только через сгенерированный SDK**.
 4. Доменные правила (окно 14 дней, рабочие часы, шаг 30 минут, запрет пересечений, атомарность бронирования) — инварианты. Их изменение — только по явному запросу, с обновлением этого README и тестов.
 5. **Сначала бэкенд, потом фронтенд:** новая возможность = сначала эндпоинт + тест на него, затем UI. Новые ресурсы API — новый файл в `server/src/routes/`.
