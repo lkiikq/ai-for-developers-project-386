@@ -1,0 +1,186 @@
+:root {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+  color: #1f2933;
+  background: #f5f7fa;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.container {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.header {
+  background: #ffffff;
+  border-bottom: 1px solid #e4e7eb;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.nav a {
+  color: #52606d;
+  text-decoration: none;
+  padding: 0.25rem 0;
+}
+
+.nav a.active {
+  color: #0b69ff;
+  border-bottom: 2px solid #0b69ff;
+}
+
+.nav .brand {
+  font-weight: 700;
+  color: #1f2933;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1rem;
+}
+
+h1 {
+  font-size: 1.5rem;
+}
+
+h2 {
+  font-size: 1.1rem;
+  margin-top: 1.5rem;
+}
+
+.muted {
+  color: #7b8794;
+}
+
+.card-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e4e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.card h2 {
+  margin: 0 0 0.25rem;
+}
+
+.card p {
+  margin: 0.25rem 0;
+}
+
+.day-picker,
+.slot-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.day,
+.slot {
+  border: 1px solid #cbd2d9;
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+}
+
+.day:hover:not(:disabled),
+.slot:hover {
+  border-color: #0b69ff;
+}
+
+.day:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.day.selected,
+.slot.selected {
+  background: #0b69ff;
+  border-color: #0b69ff;
+  color: #ffffff;
+}
+
+.form {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 360px;
+}
+
+.form label {
+  display: grid;
+  gap: 0.25rem;
+  font-weight: 500;
+}
+
+.form input,
+.form textarea {
+  padding: 0.5rem;
+  border: 1px solid #cbd2d9;
+  border-radius: 6px;
+  font: inherit;
+}
+
+.form button {
+  justify-self: start;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: #0b69ff;
+  color: #ffffff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.form button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.message {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+}
+
+.message.success {
+  background: #e3f2e9;
+  border: 1px solid #57a773;
+}
+
+.message.error {
+  background: #fdecea;
+  border: 1px solid #e08080;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #e4e7eb;
+}

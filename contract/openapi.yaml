@@ -1,0 +1,273 @@
+openapi: 3.0.0
+info:
+  title: Календарь звонков API
+  version: 0.0.0
+tags: []
+paths:
+  /api/bookings:
+    get:
+      operationId: listBookings
+      description: Предстоящие бронирования всех типов (владелец)
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Booking'
+    post:
+      operationId: createBooking
+      description: Создать бронирование (гость)
+      parameters: []
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: The request conflicts with the current state of the server.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingInput'
+  /api/event-types:
+    get:
+      operationId: listEventTypes
+      description: Список типов встреч
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventType'
+    post:
+      operationId: createEventType
+      description: Создать тип встречи (владелец)
+      parameters: []
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventType'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventTypeInput'
+  /api/event-types/{id}/slots:
+    get:
+      operationId: getEventTypeSlots
+      description: Свободные слоты типа на дату (внутри окна 14 дней)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Slot'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/health:
+    get:
+      operationId: health
+      description: Проверка работоспособности
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+components:
+  schemas:
+    ApiError:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+      description: Формат ошибки API
+    Booking:
+      type: object
+      required:
+        - id
+        - eventTypeId
+        - date
+        - startTime
+        - endTime
+        - guestName
+        - guestEmail
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор (UUID)
+        eventTypeId:
+          type: string
+          description: Идентификатор типа встречи
+        date:
+          type: string
+          description: Дата, YYYY-MM-DD (Asia/Almaty)
+        startTime:
+          type: string
+          description: Время начала, HH:mm (Asia/Almaty)
+        endTime:
+          type: string
+          description: Время окончания, HH:mm (Asia/Almaty)
+        guestName:
+          type: string
+          description: Имя гостя
+        guestEmail:
+          type: string
+          description: Email гостя
+      description: Бронирование
+    BookingInput:
+      type: object
+      required:
+        - eventTypeId
+        - date
+        - startTime
+        - guestName
+        - guestEmail
+      properties:
+        eventTypeId:
+          type: string
+          description: Идентификатор типа встречи
+        date:
+          type: string
+          description: Дата, YYYY-MM-DD (Asia/Almaty)
+        startTime:
+          type: string
+          description: Время начала, HH:mm (Asia/Almaty)
+        guestName:
+          type: string
+          minLength: 1
+          description: Имя гостя
+        guestEmail:
+          type: string
+          description: Email гостя
+      description: Данные для создания бронирования
+    EventType:
+      type: object
+      required:
+        - id
+        - title
+        - description
+        - durationMinutes
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор (UUID)
+        title:
+          type: string
+          description: Название встречи
+        description:
+          type: string
+          description: Описание встречи
+        durationMinutes:
+          type: integer
+          format: int32
+          description: Длительность в минутах
+      description: Тип встречи
+    EventTypeInput:
+      type: object
+      required:
+        - title
+        - description
+        - durationMinutes
+      properties:
+        title:
+          type: string
+          minLength: 1
+          description: Название встречи
+        description:
+          type: string
+          description: Описание встречи
+        durationMinutes:
+          type: integer
+          format: int32
+          minimum: 1
+          description: Длительность в минутах
+      description: Данные для создания типа встречи
+    HealthStatus:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+      description: Статус сервиса
+    Slot:
+      type: object
+      required:
+        - startTime
+        - endTime
+      properties:
+        startTime:
+          type: string
+          description: Время начала, HH:mm (Asia/Almaty)
+        endTime:
+          type: string
+          description: Время окончания, HH:mm (Asia/Almaty)
+      description: Свободный слот для записи
