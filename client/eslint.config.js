@@ -21,6 +21,33 @@ export default [
     rules: {
       ...reactHooks.configs['recommended-latest'].rules,
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+      // Обращения к API — только через сгенерированный SDK (см. README):
+      // прямой fetch в компонентах и тестах запрещён.
+      'no-restricted-globals': ['error', {
+        name: 'fetch',
+        message: 'В API ходим только через сгенерированный SDK (client/src/api) — прямой fetch запрещён.',
+      }],
+      'no-restricted-properties': ['error',
+        {
+          object: 'window',
+          property: 'fetch',
+          message: 'В API ходим только через сгенерированный SDK (client/src/api) — прямой fetch запрещён.',
+        },
+        {
+          object: 'globalThis',
+          property: 'fetch',
+          message: 'В API ходим только через сгенерированный SDK (client/src/api) — прямой fetch запрещён.',
+        },
+      ],
+    },
+  },
+  {
+    // api-модуль — легальная точка доступа к SDK (реэкспорт generated/),
+    // ему правило прямого fetch не мешает; сам сгенерированный SDK — в ignores.
+    files: ['src/api/**'],
+    rules: {
+      'no-restricted-globals': 'off',
+      'no-restricted-properties': 'off',
     },
   },
 ];
