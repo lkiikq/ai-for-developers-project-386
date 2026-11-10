@@ -17,3 +17,17 @@
 - **Коммиты — только Conventional Commits**: `feat:`, `fix:`, `chore:`, `docs:`, `test:`, `ci:` и т.д. Проверяется commit-msg хуком (hk).
 - Не редактировать `.github/workflows/hexlet-check.yml`.
 - Остальные инварианты (in-memory хранилище, contract-first, доменные правила, сгенерированные файлы не править руками) — см. README, раздел «Правила для ИИ-агентов».
+
+## Agent skills
+
+### Issue tracker
+
+Issues и спеки живут в GitHub Issues этого репозитория; работа идёт через `gh` CLI (ставится `mise install`, затем нужен `gh auth login`). См. `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Дефолтный набор: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. См. `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: один `GLOSSARY.md` в корне + `docs/adr/`. См. `docs/agents/domain.md`.

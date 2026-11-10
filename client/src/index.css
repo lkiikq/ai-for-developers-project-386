@@ -65,6 +65,20 @@ h2 {
   color: #7b8794;
 }
 
+.landing {
+  max-width: 560px;
+}
+
+.cta {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  background: #0b69ff;
+  color: #ffffff;
+  text-decoration: none;
+}
+
 .card-list {
   list-style: none;
   padding: 0;

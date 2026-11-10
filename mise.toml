@@ -10,6 +10,8 @@ experimental = true
 node = "22.23.4"
 hk = "2.11.1"
 pitchfork = "2.33.1"
+# GitHub CLI — трекер задач проекта (см. docs/agents/issue-tracker.md)
+gh = "2.103.3"
 
 # После `mise install` автоматически ставятся зависимости всех пакетов
 [hooks]
@@ -69,8 +71,11 @@ run = [
 ]
 
 [tasks.test]
-description = "Тесты бэкенда (Jest + Supertest)"
-run = "npm --prefix server test"
+description = "Тесты: бэкенд (Jest + Supertest), фронтенд (Vitest)"
+run = [
+  "npm --prefix server test",
+  "npm --prefix client test",
+]
 
 [tasks.build]
 description = "Сборка фронтенда (vite build)"

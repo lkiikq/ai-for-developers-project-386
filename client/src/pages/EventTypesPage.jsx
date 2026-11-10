@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { listEventTypes } from '../api/index.js';
 import EventTypeList from '../components/EventTypeList.jsx';
 
-// Главная страница гостя: выбор типа встречи (см. README, сценарий 3)
-const HomePage = () => {
+// Страница записи: выбор типа встречи (см. README, сценарий 3)
+const EventTypesPage = () => {
   const [state, setState] = useState({ status: 'loading', eventTypes: [] });
 
   useEffect(() => {
@@ -44,4 +44,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default EventTypesPage;
