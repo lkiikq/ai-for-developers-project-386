@@ -56,7 +56,7 @@ describe('Главная страница', () => {
     expect(await screen.findByRole('heading', { name: 'Запись на звонок' }))
       .toBeInTheDocument();
     expect(
-      screen.getByText('Пока нет доступных типов встреч. Загляните позже.'),
+      await screen.findByText('Пока нет доступных типов встреч. Загляните позже.'),
     ).toBeInTheDocument();
   });
 });

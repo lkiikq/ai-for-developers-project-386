@@ -38,7 +38,7 @@ describe('Типы встреч владельца (/owner/event-types)', () => 
     renderPage();
 
     expect(await screen.findByRole('heading', { name: 'Типы встреч' })).toBeInTheDocument();
-    expect(screen.getByText('Созвон на 30 минут')).toBeInTheDocument();
+    expect(await screen.findByText('Созвон на 30 минут')).toBeInTheDocument();
     expect(screen.getByText('Короткий созвон')).toBeInTheDocument();
     expect(screen.getByText('30 мин')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Новый тип встречи' }))

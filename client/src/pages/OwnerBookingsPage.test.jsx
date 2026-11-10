@@ -58,7 +58,7 @@ describe('Предстоящие события (/owner/bookings)', () => {
 
     expect(await screen.findByRole('heading', { name: 'Предстоящие события' }))
       .toBeInTheDocument();
-    const names = screen.getAllByText(/(Иван Петров|Анна Смирнова)/)
+    const names = (await screen.findAllByText(/(Иван Петров|Анна Смирнова)/))
       .map((node) => node.textContent);
     expect(names).toEqual(['Анна Смирнова', 'Иван Петров']);
     expect(screen.getByText('ivan@example.com')).toBeInTheDocument();

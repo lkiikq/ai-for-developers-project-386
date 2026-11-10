@@ -70,7 +70,7 @@ describe('Новый тип встречи (/owner/event-types/new)', () => {
     });
     expect(await screen.findByRole('heading', { name: 'Типы встреч' }))
       .toBeInTheDocument();
-    expect(screen.getByText('Созвон на 30 минут')).toBeInTheDocument();
+    expect(await screen.findByText('Созвон на 30 минут')).toBeInTheDocument();
   });
 
   it('показывает текст ошибки сервера у формы и снова даёт отправить', async () => {
