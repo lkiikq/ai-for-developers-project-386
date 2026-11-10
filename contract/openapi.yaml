@@ -203,11 +203,15 @@ components:
         guestName:
           type: string
           minLength: 1
-          description: Имя гостя
+          description: 'Имя гостя: 1+ символов после тримминга'
         guestEmail:
           type: string
-          description: Email гостя
-      description: Данные для создания бронирования
+          format: email
+          description: 'Email гостя: простая проверка формата — `^[^\s@]+@[^\s@]+\.[^\s@]+$` после тримминга'
+      description: |-
+        Данные для создания бронирования.
+        Все строковые поля триммятся на сервере до валидации и хранения;
+        ограничения длины применяются после тримминга.
     EventType:
       type: object
       required:
@@ -240,16 +244,24 @@ components:
         title:
           type: string
           minLength: 1
-          description: Название встречи
+          maxLength: 100
+          description: |-
+            Название встречи: 1–100 символов после тримминга.
+            Дубликаты названий разрешены — типы различаются по id.
         description:
           type: string
-          description: Описание встречи
+          maxLength: 500
+          description: 'Описание встречи: необязательное, допустима пустая строка, до 500 символов после тримминга'
         durationMinutes:
           type: integer
           format: int32
-          minimum: 1
-          description: Длительность в минутах
-      description: Данные для создания типа встречи
+          minimum: 30
+          maximum: 120
+          description: 'Длительность в минутах: кратна 30 — одно из значений 30, 60, 90, 120 (кратность проверяется сервером)'
+      description: |-
+        Данные для создания типа встречи.
+        Все строковые поля триммятся на сервере до валидации и хранения;
+        ограничения длины применяются после тримминга.
     HealthStatus:
       type: object
       required:
