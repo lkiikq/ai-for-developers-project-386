@@ -1,0 +1,21 @@
+# Единые проверки проекта: та же команда, что и локально (`mise run check`).
+name: check
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # Ставит mise и инструменты из mise.toml (версии зафиксированы там)
+      - uses: jdx/mise-action@v5
+        with:
+          experimental: true
+
+      - run: mise run install
+      - run: mise run check

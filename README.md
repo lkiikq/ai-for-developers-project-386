@@ -19,6 +19,7 @@
 - **Хранение данных:** in-memory (обычные JS-объекты в памяти процесса), **без базы данных**
 - **Тесты бэкенда:** Jest + Supertest
 - **Линтер:** ESLint
+- **Окружение разработки:** mise (`mise.toml` — версии инструментов, задачи, daemons), git-хуки — hk (`hk.pkl`)
 - **Развёртывание:** Docker (один образ: бэкенд + собранный фронтенд)
 
 ## ⚠️ Хранение данных — важно
@@ -79,6 +80,7 @@ contract/main.tsp ──compile──> contract/openapi.yaml ──generate─�
 │   │   ├── app.js           # сборка Express-приложения (для тестов)
 │   │   ├── store.js         # in-memory хранилище данных
 │   │   └── routes/          # роуты API (по одному файлу на ресурс)
+│   ├── tests/               # тесты (Jest + Supertest)
 │   └── package.json
 ├── client/                  # React-фронтенд (Vite)
 │   ├── src/
@@ -86,6 +88,9 @@ contract/main.tsp ──compile──> contract/openapi.yaml ──generate─�
 │   │   ├── pages/           # страницы (по одному компоненту на страницу)
 │   │   └── components/      # переиспользуемые компоненты
 │   └── package.json
+├── mise.toml                # версии инструментов, задачи, хуки и daemons mise
+├── hk.pkl                   # git-хуки (hk): pre-commit — проверки, commit-msg — формат коммита
+├── .github/workflows/check.yml  # CI: `mise run check` на каждый push
 ├── Dockerfile               # multi-stage: сборка клиента + сервер
 └── README.md
 ```
@@ -102,6 +107,12 @@ contract/main.tsp ──compile──> contract/openapi.yaml ──generate─�
 git clone https://github.com/lkiikq/ai-for-developers-project-386.git
 cd ai-for-developers-project-386
 
+# Вариант с mise (рекомендуется): ставит зафиксированные версии инструментов
+# (node, hk, pitchfork), а хук postinstall — зависимости всех пакетов
+mise install
+hk install --mise   # git-хуки: pre-commit — проверки, commit-msg — формат коммита
+
+# Либо вручную, без mise:
 cd contract && npm install   # TypeSpec-контракт
 cd ../server && npm install  # бэкенд
 cd ../client && npm install  # фронтенд
@@ -126,10 +137,14 @@ docker run --rm -p 3000:3000 call-calendar
 ### Локально (для разработки)
 
 ```bash
+# Оба сервера фоном, как daemons mise (статус: mise daemons ls, стоп: mise daemons stop)
+mise daemons start
+
+# Либо по-старинке, в двух терминалах:
 # Терминал 1 — бэкенд (http://localhost:3000)
 cd server && npm run dev
 
-# Терминал 2 — фронтенд (http://localhost:5173)
+# Терминал 2 — фронтенд (http://127.0.0.1:5173)
 cd client && npm run dev
 ```
 
@@ -176,6 +191,10 @@ Booking = { id, eventTypeId, date, startTime, endTime, guestName, guestEmail }
 
 | Команда | Где | Что делает |
 | --- | --- | --- |
+| `mise run install` | корень | Установить зависимости всех пакетов |
+| `mise run check` | корень | **Все проверки**: линтеры + тесты + сборка + соответствие сгенерированных файлов контракту. Та же команда запускается в GitHub Actions на каждый push |
+| `mise run lint` / `mise run test` / `mise run build` | корень | Отдельные проверки |
+| `mise daemons start` | корень | Dev-серверы фоном (бэкенд :3000, фронтенд :5173) |
 | `npm run compile` | `contract/` | TypeSpec → `contract/openapi.yaml` |
 | `npm run generate:api` | `client/` | OpenAPI → SDK в `client/src/api/generated/` |
 | `npm run dev` | `server/`, `client/` | Запуск в dev-режиме с перезагрузкой |
@@ -190,7 +209,7 @@ Booking = { id, eventTypeId, date, startTime, endTime, guestName, guestEmail }
 3. Фронтенд ходит в API **только через сгенерированный SDK**.
 4. Доменные правила (окно 14 дней, рабочие часы, шаг 30 минут, запрет пересечений, атомарность бронирования) — инварианты. Их изменение — только по явному запросу, с обновлением этого README и тестов.
 5. **Сначала бэкенд, потом фронтенд:** новая возможность = сначала эндпоинт + тест на него, затем UI. Новые ресурсы API — новый файл в `server/src/routes/`.
-6. После изменений запускать `npm test` и `npm run lint` в затронутом пакете; задача считается выполненной только при зелёных тестах и линтере. Перед сдачей проверить, что проект собирается в Docker-образ.
+6. После изменений запускать `mise run check` из корня (или `npm test` и `npm run lint` в затронутом пакете); задача считается выполненной только при зелёных проверках. Перед сдачей проверить, что проект собирается в Docker-образ.
 7. Минимальные изменения: не рефакторить и не переименовывать существующий код без запроса.
 8. Не удалять и не переименовывать `.github/workflows/hexlet-check.yml` и сам репозиторий.
 

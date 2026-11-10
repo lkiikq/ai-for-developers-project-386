@@ -1,0 +1,22 @@
+amends "package://github.com/jdx/hk/releases/download/v2.11.1/hk@2.11.1#/Config.pkl"
+
+// Git-хуки проекта. Хуки вызывают те же проверки, что и CI (см. mise.toml).
+// Установка хуков локально: `hk install --mise` (hk ставится через mise).
+hooks {
+  ["pre-commit"] {
+    steps {
+      // Полный прогон: линтеры, тесты, сборка, соответствие контракту
+      ["check"] {
+        check = "mise run check"
+      }
+    }
+  }
+  ["commit-msg"] {
+    steps {
+      // Формат сообщений — Conventional Commits (см. AGENTS.md)
+      ["conventional-commit"] {
+        check = "hk util check-conventional-commit {{commit_msg_file}}"
+      }
+    }
+  }
+}

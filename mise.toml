@@ -1,0 +1,95 @@
+# Окружение разработки: версии инструментов, задачи, хуки и фоновые
+# dev-серверы. См. https://mise.jdx.dev/
+[settings]
+# daemons — экспериментальная фича, требует флага
+experimental = true
+
+# Версии зафиксированы. node совпадает с мажором базового образа
+# Dockerfile (node:22-alpine).
+[tools]
+node = "22.23.4"
+hk = "2.11.1"
+pitchfork = "2.33.1"
+
+# После `mise install` автоматически ставятся зависимости всех пакетов
+[hooks]
+postinstall = "mise run install"
+
+# Фоновые dev-серверы (pitchfork). Запуск: mise daemons start,
+# состояние: mise daemons ls, остановка: mise daemons stop.
+# На Windows команды выполняются через cmd /C (без exec).
+[daemons.server]
+run = "npm --prefix server run dev"
+ready_port = 3000
+
+[daemons.client]
+run = "npm --prefix client run dev"
+ready_port = 5173
+
+[daemon_groups]
+default = ["server", "client"]
+
+# npm 10 (из node 22) некорректно обрабатывает `npm install --prefix`
+# из каталога без package.json, поэтому установка идёт из каталога пакета
+[tasks."install:contract"]
+description = "Зависимости контракта"
+dir = "contract"
+run = "npm install"
+hide = true
+
+[tasks."install:server"]
+description = "Зависимости бэкенда"
+dir = "server"
+run = "npm install"
+hide = true
+
+[tasks."install:client"]
+description = "Зависимости фронтенда"
+dir = "client"
+run = "npm install"
+hide = true
+
+[tasks.install]
+description = "Установить зависимости всех пакетов"
+run = [
+  { task = "install:contract" },
+  { task = "install:server" },
+  { task = "install:client" },
+]
+
+[tasks.dev]
+description = "Запустить бэкенд (:3000) и фронтенд (:5173) фоновыми daemons"
+run = "mise daemons start"
+
+[tasks.lint]
+description = "ESLint: сервер и фронтенд"
+run = [
+  "npm --prefix server run lint",
+  "npm --prefix client run lint",
+]
+
+[tasks.test]
+description = "Тесты бэкенда (Jest + Supertest)"
+run = "npm --prefix server test"
+
+[tasks.build]
+description = "Сборка фронтенда (vite build)"
+run = "npm --prefix client run build"
+
+[tasks."check:generated"]
+description = "Сгенерированные файлы соответствуют контракту (contract-first)"
+run = [
+  "npm --prefix contract run compile",
+  "npm --prefix client run generate:api",
+  "git diff --exit-code -- contract/openapi.yaml client/src/api/generated",
+]
+
+# Одна команда для всех проверок — локально и в GitHub Actions
+[tasks.check]
+description = "Все проверки: линтеры, тесты, сборка, соответствие контракту"
+run = [
+  "mise run lint",
+  "mise run test",
+  "mise run build",
+  "mise run check:generated",
+]
