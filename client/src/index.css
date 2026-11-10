@@ -198,3 +198,281 @@ h2 {
   padding: 0.5rem 0.75rem;
   border-bottom: 1px solid #e4e7eb;
 }
+
+/* Акцент выбора: оранжевая рамка выбранной даты и заливка слота
+   (см. README, «Страницы и UX») */
+:root {
+  --accent: #ff7a1a;
+}
+
+.badge {
+  display: inline-block;
+  margin: 0;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background: #fff1e6;
+  border: 1px solid var(--accent);
+  color: #b34700;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.subtitle {
+  color: #52606d;
+  margin: 0.5rem 0 0;
+}
+
+.landing-card {
+  margin-top: 1.5rem;
+}
+
+.nav-owner {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid #cbd2d9;
+  border-radius: 6px;
+}
+
+.card-link {
+  display: inline-block;
+  margin-top: 0.5rem;
+  color: #0b69ff;
+}
+
+.owner-nav {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.owner-nav a {
+  color: #0b69ff;
+}
+
+.booking-guest {
+  margin: 0;
+}
+
+.booking-email {
+  margin: 0.125rem 0;
+  color: #7b8794;
+}
+
+/* Кнопки-ссылки и действия */
+.button {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: #0b69ff;
+  color: #ffffff;
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button.secondary {
+  background: #ffffff;
+  border: 1px solid #cbd2d9;
+  color: #1f2933;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.form select {
+  padding: 0.5rem;
+  border: 1px solid #cbd2d9;
+  border-radius: 6px;
+  font: inherit;
+}
+
+.form-submit {
+  width: 100%;
+}
+
+/* Страница слотов: три колонки */
+.booking-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.info-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding: 0.5rem 0.75rem;
+  background: #ffffff;
+  border: 1px solid #e4e7eb;
+  border-radius: 6px;
+}
+
+.info-block + .info-block {
+  margin-top: 0.5rem;
+}
+
+.info-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #7b8794;
+}
+
+.success-title {
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+}
+
+/* Календарь */
+.calendar {
+  background: #ffffff;
+  border: 1px solid #e4e7eb;
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+
+.calendar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.calendar-head button {
+  border: 1px solid #cbd2d9;
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 0.25rem 0.6rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+.calendar-title {
+  font-weight: 600;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.25rem;
+}
+
+.calendar-weekdays {
+  margin-bottom: 0.25rem;
+}
+
+.cal-weekday {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #7b8794;
+}
+
+.cal-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125rem;
+  padding: 0.375rem 0.125rem;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: #ffffff;
+  font: inherit;
+}
+
+.cal-day.empty {
+  visibility: hidden;
+}
+
+.cal-day.available {
+  border-color: #cbd2d9;
+  cursor: pointer;
+}
+
+.cal-day.muted {
+  color: #b0b8c1;
+  background: #f5f7fa;
+  cursor: default;
+}
+
+.cal-day.selected {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.cal-day-number {
+  font-weight: 600;
+}
+
+.cal-day-count {
+  font-size: 0.7rem;
+  color: #7b8794;
+}
+
+.cal-day.selected .cal-day-count {
+  color: #b34700;
+}
+
+/* Сетка слотов дня */
+.slot-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.slot-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid #e4e7eb;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.slot-row.busy {
+  background: #f5f7fa;
+  color: #7b8794;
+}
+
+.slot-row.selected {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+}
+
+.slot-time {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  padding: 0;
+}
+
+button.slot-time {
+  cursor: pointer;
+}
+
+button.slot-time:hover {
+  text-decoration: underline;
+}
+
+.slot-status {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
