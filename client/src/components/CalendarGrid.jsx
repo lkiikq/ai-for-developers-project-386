@@ -1,10 +1,10 @@
-import { formatMonthYear, dayOfMonth, mondayIndex } from '../dates.js';
+import { formatMonthYear, dayOfMonth, mondayIndex, isWeekend } from '../dates.js';
 
 const WEEKDAYS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
 // Сетка календаря: неделя с понедельника, заголовок месяца, кнопки «←» «→».
 // Доступные даты окна бронирования — со счётчиком свободных слотов «N св.»,
-// недоступные приглушены, выбранная — с оранжевой рамкой
+// выходные и недоступные приглушены, выбранная — с оранжевой рамкой
 // (см. README, «Страницы и UX»)
 const CalendarGrid = ({
   month, days, counts, selectedDate, onSelect, onPrevMonth, onNextMonth,
@@ -37,7 +37,7 @@ const CalendarGrid = ({
       <div className="calendar-grid">
         {cells.map((date, index) => {
           if (!date) return <span key={`empty-${index}`} className="cal-day empty" />;
-          const isEnabled = available.has(date);
+          const isEnabled = available.has(date) && !isWeekend(date);
           const count = counts[date];
           return (
             <button

@@ -100,6 +100,24 @@ describe('Страница слотов (/event-types/:id)', () => {
       .toHaveTextContent('Занято');
   });
 
+  it('выходные внутри окна в календаре приглушены и не выбираются', async () => {
+    renderPage();
+    await waitForSlots();
+
+    const weekends = getBookingWindow().filter((date) => isWeekend(date));
+    expect(weekends.length).toBeGreaterThan(0);
+    // Даты вне отображаемого месяца в сетке не рендерятся — проверяем
+    // все выходные окна, попавшие в сетку (гарантированная непустая
+    // проверка — в компонентном тесте CalendarGrid)
+    const rendered = weekends
+      .map((date) => screen.queryByRole('button', { name: date }))
+      .filter((button) => button !== null);
+    for (const button of rendered) {
+      expect(button).toBeDisabled();
+      expect(button).toHaveClass('muted');
+    }
+  });
+
   it('404 типа → «Тип встречи не найден.» со ссылкой «К списку типов»', async () => {
     vi.mocked(listEventTypes).mockResolvedValue({ data: [] });
     renderPage('unknown-id');
