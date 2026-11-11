@@ -94,6 +94,13 @@ run = "npm --prefix server test"
 description = "Фронтенд-тесты (Vitest + Testing Library)"
 run = "npm --prefix client test"
 
+# Браузерный тест сквозного сценария (тикет #12): Playwright сам поднимает
+# бэкенд (:3000) и фронтенд dev (:5173) через webServer, без моков API.
+# Браузеры ставит CI (check.yml); локально — `npx playwright install chromium`.
+[tasks."test:browser"]
+description = "Браузерный e2e-тест сквозного сценария (Playwright)"
+run = "npm --prefix client run test:browser"
+
 # Тест цепочки генерации: generate создаёт оба артефакта с нуля,
 # verify:generated ловит новый файл в генерируемых путях (см. tests/).
 [tasks."test:generated"]
@@ -144,9 +151,7 @@ run = [
   "mise run test:api",
   "mise run test:client",
   "mise run test:generated",
-  # Место для браузерного теста из тикета #12: раскомментировать строку
-  # и добавить таск test:browser.
-  # "mise run test:browser",
+  "mise run test:browser",
   "mise run build",
   # Проверка генерации — последней: свежие артефакты должны совпадать с git
   # (ловит контракт без регенерации и ручные правки сгенерированного в коммитах).

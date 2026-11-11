@@ -18,6 +18,13 @@ jobs:
           experimental: true
 
       - run: mise run install
+
+      # Браузеры для браузерного теста (тикет #12): chromium + системные
+      # зависимости. Ставится до mise run check (в нём test:browser).
+      - name: Install Playwright browsers
+        working-directory: client
+        run: npx playwright install --with-deps chromium
+
       # check из корня: первым шагом идёт генерация из чистого состояния
       # (checkout даёт чистую рабочую копию), затем линтер, типы, тесты,
       # сборка и сверка генерируемых путей — состав см. mise.toml (тикет #9)
