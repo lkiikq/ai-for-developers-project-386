@@ -2,3 +2,6 @@ node_modules/
 dist/
 tsp-output/
 mise.local.toml
+# Артефакты Playwright (тикет #12)
+test-results/
+playwright-report/

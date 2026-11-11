@@ -21,6 +21,37 @@ const labelFormatter = new Intl.DateTimeFormat('ru-RU', {
   month: 'short',
 });
 
+// «суббота, 28 марта» — выбранная дата в колонке «Информация»
+const fullDateFormatter = new Intl.DateTimeFormat('ru-RU', {
+  timeZone: 'UTC',
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+});
+
+// «март 2026 г.» — заголовок месяца в календаре
+const monthFormatter = new Intl.DateTimeFormat('ru-RU', {
+  timeZone: 'UTC',
+  month: 'long',
+  year: 'numeric',
+});
+
+// «20.03.2026» — дата для строки «Создано: …»
+const createdDateFormatter = new Intl.DateTimeFormat('ru-RU', {
+  timeZone: 'UTC',
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric',
+});
+
+// «09:15» — время для строки «Создано: …»
+const createdTimeFormatter = new Intl.DateTimeFormat('ru-RU', {
+  timeZone: 'UTC',
+  hour: '2-digit',
+  minute: '2-digit',
+  hourCycle: 'h23',
+});
+
 // Текущая дата в Asia/Almaty в формате YYYY-MM-DD
 const todayInAlmaty = () => dayFormatter.format(new Date());
 
@@ -42,3 +73,26 @@ export const isWeekend = (date) => {
   const day = new Date(`${date}T00:00:00Z`).getUTCDay();
   return day === 0 || day === 6;
 };
+
+// «суббота, 28 марта» — выбранная дата (строчными, с днём недели)
+export const formatFullDate = (date) => (
+  fullDateFormatter.format(new Date(`${date}T00:00:00Z`))
+);
+
+// «март 2026 г.» — заголовок месяца календаря
+export const formatMonthYear = (month) => monthFormatter.format(month);
+
+// «20.03.2026, 09:15» — строка «Создано: …» (момент из API в UTC)
+export const formatCreatedAt = (iso) => (
+  `${createdDateFormatter.format(new Date(iso))}, ${createdTimeFormatter.format(new Date(iso))}`
+);
+
+// Номер дня месяца для кнопки календаря
+export const dayOfMonth = (date) => (
+  new Date(`${date}T00:00:00Z`).getUTCDate()
+);
+
+// Индекс дня недели с понедельника (0) — для сетки Пн–Вс
+export const mondayIndex = (date) => (
+  (new Date(`${date}T00:00:00Z`).getUTCDay() + 6) % 7
+);
