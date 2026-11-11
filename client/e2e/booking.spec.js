@@ -48,16 +48,12 @@ test('гость записывается на свободный слот, вл
   expect(created.ok()).toBe(true);
 
   // Гость: главная → «Записаться →» → карточка типа → «Выбрать».
-  // Одна повторная загрузка списка — защита от транзиентного сбоя
-  // прокси/dev-сервера (при переиспользовании уже запущенных серверов).
+  // Список грузится асинхронно — ждём видимости карточки явно; ошибки
+  // загрузки не «лечим» автorerраем, они должны проваливать тест.
   await page.goto('/');
   await page.getByRole('link', { name: 'Записаться →' }).click();
   const card = page.locator('.card', { hasText: title });
-  const retry = page.getByRole('button', { name: 'Повторить' });
-  await expect(async () => {
-    if (await retry.isVisible().catch(() => false)) await retry.click();
-    await expect(card).toBeVisible({ timeout: 3000 });
-  }).toPass({ timeout: 20_000 });
+  await expect(card).toBeVisible();
   await card.getByRole('link', { name: 'Выбрать' }).click();
 
   // Календарь: ближайший рабочий день (окно всегда содержит пн–пт)
