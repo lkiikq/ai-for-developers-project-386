@@ -68,6 +68,19 @@ export const isWithinWindow = (dateStr) => {
   return dateStr >= tomorrow && dateStr <= lastDay;
 };
 
+// Общая валидация date для ручек (слоты и бронирование): формат и окно
+// 14 дней. Тексты ошибок дословно из контракта (README, «API», таблица
+// ошибок) — не менять.
+export const dateValidationError = (value) => {
+  if (!isValidDateStr(value)) {
+    return 'Некорректная дата: ожидается формат YYYY-MM-DD.';
+  }
+  if (!isWithinWindow(value)) {
+    return 'Дата вне окна бронирования: запись открыта на 14 дней, начиная с завтрашнего дня.';
+  }
+  return null;
+};
+
 export const toMinutes = (timeStr) => {
   const [hours, minutes] = timeStr.split(':').map(Number);
   return hours * 60 + minutes;

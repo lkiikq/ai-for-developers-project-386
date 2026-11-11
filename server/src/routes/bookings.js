@@ -2,9 +2,8 @@ import { Router } from 'express';
 import crypto from 'node:crypto';
 import store from '../store.js';
 import {
-  isValidDateStr,
+  dateValidationError,
   isValidTimeStr,
-  isWithinWindow,
   isValidScheduleSlot,
   overlaps,
   toMinutes,
@@ -42,15 +41,9 @@ router.post('/', (req, res) => {
   const body = req.body ?? {};
 
   const date = body.date;
-  if (!isValidDateStr(date)) {
-    return res
-      .status(400)
-      .json({ error: 'Некорректная дата: ожидается формат YYYY-MM-DD.' });
-  }
-  if (!isWithinWindow(date)) {
-    return res.status(400).json({
-      error: 'Дата вне окна бронирования: запись открыта на 14 дней, начиная с завтрашнего дня.',
-    });
+  const dateError = dateValidationError(date);
+  if (dateError) {
+    return res.status(400).json({ error: dateError });
   }
 
   const startTime = body.startTime;

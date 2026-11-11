@@ -4,8 +4,7 @@ import store from '../store.js';
 import {
   VALID_DURATIONS,
   computeFreeSlots,
-  isWithinWindow,
-  isValidDateStr,
+  dateValidationError,
 } from '../schedule.js';
 
 // Роуты типов встреч:
@@ -69,15 +68,9 @@ router.get('/:id/slots', (req, res) => {
   if (date === undefined) {
     return res.status(400).json({ error: 'Параметр date обязателен.' });
   }
-  if (!isValidDateStr(date)) {
-    return res
-      .status(400)
-      .json({ error: 'Некорректная дата: ожидается формат YYYY-MM-DD.' });
-  }
-  if (!isWithinWindow(date)) {
-    return res.status(400).json({
-      error: 'Дата вне окна бронирования: запись открыта на 14 дней, начиная с завтрашнего дня.',
-    });
+  const dateError = dateValidationError(date);
+  if (dateError) {
+    return res.status(400).json({ error: dateError });
   }
 
   const eventType = store.eventTypes.find((item) => item.id === req.params.id);
