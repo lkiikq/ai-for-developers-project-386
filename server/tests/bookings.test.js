@@ -39,6 +39,24 @@ const seedBooking = (overrides) => {
 };
 
 describe('POST /api/bookings — успех', () => {
+  test('201: в ответе createdAt — момент создания брони (date-time)', async () => {
+    const { body: eventType } = await createEventType('Созвон', 30);
+    const before = Date.now();
+
+    const response = await createBooking({
+      eventTypeId: eventType.id,
+      date: firstWeekdayInWindow(),
+      startTime: '10:00',
+    });
+
+    expect(response.status).toBe(201);
+    expect(response.body.createdAt).toEqual(expect.any(String));
+    const createdAt = Date.parse(response.body.createdAt);
+    expect(Number.isNaN(createdAt)).toBe(false);
+    expect(createdAt).toBeGreaterThanOrEqual(before);
+    expect(createdAt).toBeLessThanOrEqual(Date.now());
+  });
+
   test('201: в ответе endTime = startTime + durationMinutes типа', async () => {
     const { body: eventType } = await createEventType('Созвон', 60);
     const date = firstWeekdayInWindow();
@@ -58,6 +76,7 @@ describe('POST /api/bookings — успех', () => {
       endTime: '11:00',
       guestName: 'Иван Иванов',
       guestEmail: 'ivan@example.com',
+      createdAt: expect.any(String),
     });
     expect(store.bookings).toHaveLength(1);
   });
@@ -373,6 +392,22 @@ describe('GET /api/bookings — предстоящие', () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual([]);
+  });
+
+  test('GET возвращает createdAt, сохранённый при создании брони', async () => {
+    const { body: eventType } = await createEventType('Созвон', 30);
+    const created = await createBooking({
+      eventTypeId: eventType.id,
+      date: firstWeekdayInWindow(),
+      startTime: '10:00',
+    });
+
+    const response = await request(app).get('/api/bookings');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveLength(1);
+    expect(response.body[0].createdAt).toEqual(expect.any(String));
+    expect(response.body[0].createdAt).toBe(created.body.createdAt);
   });
 
   test('вчерашние исключены, сегодняшние (уже начавшиеся) и будущие включены', async () => {

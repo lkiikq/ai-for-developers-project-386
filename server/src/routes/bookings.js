@@ -113,6 +113,8 @@ router.post('/', (req, res) => {
     endTime: fromMinutes(end),
     guestName,
     guestEmail,
+    // Момент создания брони — ISO-строка date-time (см. README, модели данных)
+    createdAt: new Date().toISOString(),
   };
   store.bookings.push(booking);
   return res.status(201).json(booking);

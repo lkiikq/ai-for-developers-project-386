@@ -170,6 +170,7 @@ components:
         - endTime
         - guestName
         - guestEmail
+        - createdAt
       properties:
         id:
           type: string
@@ -192,6 +193,10 @@ components:
         guestEmail:
           type: string
           description: Email гостя
+        createdAt:
+          type: string
+          format: date-time
+          description: Время создания брони, формат date-time (ISO-строка, момент создания)
       description: Бронирование
     BookingInput:
       type: object

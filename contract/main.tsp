@@ -74,6 +74,10 @@ model Booking {
 
   /** Email гостя */
   guestEmail: string;
+
+  /** Время создания брони, формат date-time (ISO-строка, момент создания) */
+  @format("date-time")
+  createdAt: string;
 }
 
 /**

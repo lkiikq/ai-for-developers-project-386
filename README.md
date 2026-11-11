@@ -280,10 +280,10 @@ H1 «Типы встреч». Список типов карточками: на
 EventType = { id, title, description, durationMinutes }
 
 // Бронирование
-Booking = { id, eventTypeId, date, startTime, endTime, guestName, guestEmail }
+Booking = { id, eventTypeId, date, startTime, endTime, guestName, guestEmail, createdAt }
 ```
 
-`id` — строки (UUID). Даты — строки `YYYY-MM-DD`, время — `HH:mm`, всё в часовом поясе `Asia/Almaty`. `endTime = startTime + durationMinutes` соответствующего типа встречи.
+`id` — строки (UUID). Даты — строки `YYYY-MM-DD`, время — `HH:mm`, всё в часовом поясе `Asia/Almaty`. `endTime = startTime + durationMinutes` соответствующего типа встречи. `createdAt` — время создания брони, формат date-time (ISO-строка моментального времени).
 
 ### Правила валидации входных данных
 
