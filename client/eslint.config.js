@@ -50,4 +50,11 @@ export default [
       'no-restricted-properties': 'off',
     },
   },
+  {
+    // Playwright: конфиг и e2e-тесты выполняются в Node (process, test-раннер)
+    files: ['playwright.config.js', 'e2e/**'],
+    languageOptions: {
+      globals: { ...globals.node },
+    },
+  },
 ];
