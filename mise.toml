@@ -96,10 +96,22 @@ run = "npm --prefix client test"
 
 # Браузерный тест сквозного сценария (тикет #12): Playwright сам поднимает
 # бэкенд (:3000) и фронтенд dev (:5173) через webServer, без моков API.
-# Браузеры ставит CI (check.yml); локально — `npx playwright install chromium`.
+# Ensure-шаг ставит chromium идемпотентно (при установленном — быстрый
+# no-op с exit 0), поэтому `mise run check` работает на свежем клоне одной
+# командой; в CI браузер дополнительно ставится с системными зависимостями
+# (--with-deps) до запуска check.
+[tasks."test:browser:install"]
+description = "Chromium для Playwright (идемпотентно)"
+dir = "client"
+run = "npx playwright install chromium"
+hide = true
+
 [tasks."test:browser"]
 description = "Браузерный e2e-тест сквозного сценария (Playwright)"
-run = "npm --prefix client run test:browser"
+run = [
+  { task = "test:browser:install" },
+  "npm --prefix client run test:browser",
+]
 
 # Тест цепочки генерации: generate создаёт оба артефакта с нуля,
 # verify:generated ловит новый файл в генерируемых путях (см. tests/).
