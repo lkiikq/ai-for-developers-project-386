@@ -23,7 +23,7 @@ const NewEventTypePage = () => {
     setBusy(true);
     setError(null);
     try {
-      const { data, error: apiError } = await createEventType({
+      const { error: apiError } = await createEventType({
         body: {
           title: form.title.trim(),
           description: form.description.trim(),
@@ -34,7 +34,7 @@ const NewEventTypePage = () => {
         setError(apiError.error ?? FALLBACK_ERROR);
         return;
       }
-      navigate('/owner/event-types', { state: { createdType: data } });
+      navigate('/owner/event-types');
     } catch {
       setError(FALLBACK_ERROR);
     } finally {

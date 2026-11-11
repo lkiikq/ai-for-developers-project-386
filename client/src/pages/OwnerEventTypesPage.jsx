@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { listEventTypes } from '../api/index.js';
 import EventTypeList from '../components/EventTypeList.jsx';
 import LoadError from '../components/LoadError.jsx';
@@ -7,11 +7,6 @@ import LoadError from '../components/LoadError.jsx';
 // Типы встреч владельца (/owner/event-types): список, переходы по зоне
 // владельца, empty и error (см. README, «Страницы и UX»)
 const OwnerEventTypesPage = () => {
-  // После создания типа редирект приходит сюда с ним в state — показываем
-  // его сразу в списке, даже если список ещё не обновился на сервере
-  const { state } = useLocation();
-  const createdType = state?.createdType;
-
   const [reloadKey, setReloadKey] = useState(0);
   const [status, setStatus] = useState('loading');
   const [eventTypes, setEventTypes] = useState([]);
@@ -31,12 +26,7 @@ const OwnerEventTypesPage = () => {
           setStatus('error');
           return;
         }
-        const list = data ?? [];
-        setEventTypes(
-          createdType && !list.some((type) => type.id === createdType.id)
-            ? [createdType, ...list]
-            : list,
-        );
+        setEventTypes(data ?? []);
         setStatus('ready');
       })
       .catch(() => {
@@ -45,7 +35,7 @@ const OwnerEventTypesPage = () => {
     return () => {
       cancelled = true;
     };
-  }, [createdType, reloadKey]);
+  }, [reloadKey]);
 
   return (
     <section>

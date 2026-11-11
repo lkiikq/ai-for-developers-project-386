@@ -51,11 +51,12 @@ describe('Новый тип встречи (/owner/event-types/new)', () => {
 
   it('после успешного создания редиректит на список типов владельца', async () => {
     const user = userEvent.setup();
-    vi.mocked(createEventType).mockResolvedValue({
-      data: {
-        id: 'new-id', title: 'Созвон на 30 минут', description: 'Короткий созвон', durationMinutes: 60,
-      },
-    });
+    const created = {
+      id: 'new-id', title: 'Созвон на 30 минут', description: 'Короткий созвон', durationMinutes: 60,
+    };
+    vi.mocked(createEventType).mockResolvedValue({ data: created });
+    // POST синхронен: список после редиректа уже содержит созданный тип
+    vi.mocked(listEventTypes).mockResolvedValue({ data: [created] });
     renderPage();
 
     await fillForm(user);
@@ -71,6 +72,7 @@ describe('Новый тип встречи (/owner/event-types/new)', () => {
     expect(await screen.findByRole('heading', { name: 'Типы встреч' }))
       .toBeInTheDocument();
     expect(await screen.findByText('Созвон на 30 минут')).toBeInTheDocument();
+    expect(listEventTypes).toHaveBeenCalled();
   });
 
   it('показывает текст ошибки сервера у формы и снова даёт отправить', async () => {
