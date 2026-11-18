@@ -11,26 +11,34 @@ const createEventType = (overrides = {}) =>
     .send({ title: 'Созвон на 30 минут', durationMinutes: 30, ...overrides });
 
 describe('GET /api/event-types', () => {
-  test('без типов возвращает 200 и пустой список', async () => {
+  test('по умолчанию два типа встречи: 30 и 60 минут', async () => {
     const response = await request(app).get('/api/event-types');
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual([]);
+    expect(response.body.map((item) => item.durationMinutes)).toEqual([
+      30,
+      60,
+    ]);
+    expect(response.body.map((item) => item.title)).toEqual([
+      'Созвон на 30 минут',
+      'Созвон на час',
+    ]);
   });
 
-  test('возвращает созданные типы встреч', async () => {
+  test('возвращает созданные типы встреч после типов по умолчанию', async () => {
     await createEventType({ title: 'Первый', durationMinutes: 60 });
     await createEventType({ title: 'Второй', durationMinutes: 90 });
 
     const response = await request(app).get('/api/event-types');
 
     expect(response.status).toBe(200);
-    expect(response.body).toHaveLength(2);
-    expect(response.body.map((item) => item.title)).toEqual([
+    expect(response.body).toHaveLength(4);
+    const created = response.body.slice(2);
+    expect(created.map((item) => item.title)).toEqual([
       'Первый',
       'Второй',
     ]);
-    expect(response.body.map((item) => item.durationMinutes)).toEqual([
+    expect(created.map((item) => item.durationMinutes)).toEqual([
       60,
       90,
     ]);
