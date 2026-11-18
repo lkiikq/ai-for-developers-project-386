@@ -10,9 +10,12 @@ COPY client ./
 RUN npm run build
 
 # Этап 2: бэкенд + собранный фронтенд. Express раздаёт API и статику
-# фронтенда на порту 3000.
+# фронтенда. Порт берётся из переменной окружения PORT (деплой и
+# автопроверка задают её сами); значение ниже — только значение по
+# умолчанию, как и в server/src/index.js.
 FROM node:22-alpine
 ENV NODE_ENV=production
+ENV PORT=3000
 WORKDIR /app
 COPY server/package.json server/package-lock.json ./server/
 RUN npm --prefix server ci --omit=dev
