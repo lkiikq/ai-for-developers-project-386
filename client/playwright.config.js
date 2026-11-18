@@ -1,9 +1,12 @@
 import { defineConfig } from '@playwright/test';
 
 // Браузерный e2e-тест (тикет #12). webServer сам поднимает настоящий
-// бэкенд (:3000) и фронтенд dev (:5173) — API бронирования не подменяется,
-// моков и перехватов в тесте нет. Порт бэкенда жёстко 3000 (server/src/index.js),
-// фронтенд — Vite dev на 127.0.0.1:5173 с прокси /api → 3000.
+// бэкенд и фронтенд dev — API бронирования не подменяется, моков и
+// перехватов в тесте нет.
+// Порты изолированы от dev-серверов разработки (:3000/:5173): бэкенд на
+// 3100 (PORT), фронтенд на 5273 (CLIENT_PORT, прокси /api → API_PORT).
+// Иначе прогон пишет тестовые данные («Тип E2E…») в хранилище dev-сервера.
+// reuseExistingServer выключен: свежая пара серверов на каждый прогон.
 export default defineConfig({
   testDir: './e2e',
   timeout: 60_000,
@@ -11,19 +14,21 @@ export default defineConfig({
   // Без HTML-отчёта: list-репортер, чтобы check не оставлял артефактов
   reporter: [['list']],
   use: {
-    baseURL: 'http://127.0.0.1:5173',
+    baseURL: 'http://127.0.0.1:5273',
   },
   webServer: [
     {
       command: 'node ../server/src/index.js',
-      url: 'http://localhost:3000/api/health',
-      reuseExistingServer: !process.env.CI,
+      env: { PORT: '3100' },
+      url: 'http://127.0.0.1:3100/api/health',
+      reuseExistingServer: false,
       timeout: 60_000,
     },
     {
       command: 'npm run dev',
-      url: 'http://127.0.0.1:5173',
-      reuseExistingServer: !process.env.CI,
+      env: { CLIENT_PORT: '5273', API_PORT: '3100' },
+      url: 'http://127.0.0.1:5273',
+      reuseExistingServer: false,
       timeout: 60_000,
     },
   ],

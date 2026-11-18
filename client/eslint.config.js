@@ -51,8 +51,8 @@ export default [
     },
   },
   {
-    // Playwright: конфиг и e2e-тесты выполняются в Node (process, test-раннер)
-    files: ['playwright.config.js', 'e2e/**'],
+    // Конфиги и e2e-тесты выполняются в Node (process, test-раннер)
+    files: ['playwright.config.js', 'vite.config.js', 'e2e/**'],
     languageOptions: {
       globals: { ...globals.node },
     },
