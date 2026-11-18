@@ -1,0 +1,39 @@
+# Release-PR по Conventional Commits (тикет #14).
+#
+# Отдельный workflow, не связан с check.yml / hexlet-check.yml: триггерится
+# только на push в main (и вручную), права — только на создание release-PR
+# и релизов. Полная проверка «release-PR появился» — после мержа в main
+# пользователем (см. тикет #14).
+#
+# Конфигурация release-please — дефолтная, без release-please-config.json и
+# .release-please-manifest.json: в v4 manifest-режим включается, только если
+# release-type НЕ задан; явный release-type переводит action в однопакетный
+# режим. `simple` выбран вместо `node` потому, что в корне репозитория нет
+# package.json (тип `node` требует его): стратегия создаёт CHANGELOG.md и
+# обновляет version.txt, если тот появится (см. src/strategies/simple.ts
+# в googleapis/release-please).
+#
+# Conventional Commits — уже правило репозитория (hk, commit-msg).
+name: release-please
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  # release-please ставит метки на release-PR — операция идёт через issues API
+  # (набор прав из README release-please-action: contents/issues/pull-requests).
+  issues: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      # checkout не нужен: action работает через GitHub API по истории репо.
+      - uses: googleapis/release-please-action@v4
+        with:
+          release-type: simple

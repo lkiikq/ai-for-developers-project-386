@@ -1,13 +1,15 @@
 import { NavLink, Outlet } from 'react-router-dom';
 
+// Шапка на всех страницах: бренд «Calendar» → /, вкладки «Записаться» и
+// «Предстоящие события» (см. README, «Страницы и UX»)
 const Layout = () => (
   <>
     <header className="header">
       <nav className="nav container">
-        <NavLink to="/" className="brand">Календарь звонков</NavLink>
+        <NavLink to="/" className="brand">Calendar</NavLink>
         <div className="nav-links">
-          <NavLink to="/owner/bookings">Предстоящие встречи</NavLink>
-          <NavLink to="/owner/event-types/new">Новый тип встречи</NavLink>
+          <NavLink to="/event-types">Записаться</NavLink>
+          <NavLink to="/owner/bookings">Предстоящие события</NavLink>
         </div>
       </nav>
     </header>

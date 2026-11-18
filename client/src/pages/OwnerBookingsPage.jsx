@@ -1,68 +1,69 @@
 import { useEffect, useState } from 'react';
-import { listBookings, listEventTypes } from '../api/index.js';
+import { Link } from 'react-router-dom';
+import { listBookings } from '../api/index.js';
+import LoadError from '../components/LoadError.jsx';
+import { formatCreatedAt } from '../dates.js';
 
-// Страница владельца: список предстоящих встреч (см. README, сценарий 2)
+// Предстоящие события (/owner/bookings): карточки бронирований, сортировка
+// по дате и времени встречи — ближайшие выше (см. README, «Страницы и UX»)
 const OwnerBookingsPage = () => {
-  const [state, setState] = useState({ status: 'loading', bookings: [], typesById: {} });
+  const [reloadKey, setReloadKey] = useState(0);
+  const [status, setStatus] = useState('loading');
+  const [bookings, setBookings] = useState([]);
+
+  // Сброс статуса — в обработчике повтора, не в теле эффекта (react-hooks)
+  const reload = () => {
+    setStatus('loading');
+    setReloadKey((key) => key + 1);
+  };
 
   useEffect(() => {
     let cancelled = false;
-    Promise.all([listBookings(), listEventTypes()])
-      .then(([bookingsRes, typesRes]) => {
+    listBookings()
+      .then(({ data, error }) => {
         if (cancelled) return;
-        if (bookingsRes.error || typesRes.error) {
-          setState({ status: 'error', bookings: [], typesById: {} });
+        if (error) {
+          setStatus('error');
           return;
         }
-        const typesById = Object.fromEntries(
-          (typesRes.data ?? []).map((type) => [type.id, type]),
-        );
-        setState({ status: 'ready', bookings: bookingsRes.data ?? [], typesById });
+        const sorted = [...(data ?? [])].sort((a, b) => (
+          `${a.date}-${a.startTime}`.localeCompare(`${b.date}-${b.startTime}`)
+        ));
+        setBookings(sorted);
+        setStatus('ready');
       })
       .catch(() => {
-        if (!cancelled) setState({ status: 'error', bookings: [], typesById: {} });
+        if (!cancelled) setStatus('error');
       });
     return () => {
       cancelled = true;
     };
-  }, []);
-
-  if (state.status === 'loading') return <p>Загрузка…</p>;
-  if (state.status === 'error') {
-    return (
-      <p className="message error">
-        Не удалось загрузить список встреч. Попробуйте обновить страницу.
-      </p>
-    );
-  }
+  }, [reloadKey]);
 
   return (
     <section>
-      <h1>Предстоящие встречи</h1>
-      {state.bookings.length === 0 ? (
-        <p className="muted">Предстоящих встреч пока нет.</p>
+      <h1>Предстоящие события</h1>
+      <nav className="owner-nav">
+        <Link to="/owner/event-types">Типы встреч</Link>
+      </nav>
+      {status === 'loading' && <p>Загрузка…</p>}
+      {status === 'error' && <LoadError onRetry={reload} />}
+      {status === 'ready' && (bookings.length === 0 ? (
+        <p className="muted">Предстоящих событий нет.</p>
       ) : (
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Дата</th>
-              <th>Время</th>
-              <th>Тип встречи</th>
-              <th>Гость</th>
-            </tr>
-          </thead>
-          <tbody>
-            {state.bookings.map((booking) => (
-              <tr key={booking.id}>
-                <td>{booking.date}</td>
-                <td>{booking.startTime}–{booking.endTime}</td>
-                <td>{state.typesById[booking.eventTypeId]?.title ?? '—'}</td>
-                <td>{booking.guestName} ({booking.guestEmail})</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+        <ul className="card-list">
+          {bookings.map((booking) => (
+            <li key={booking.id} className="card booking-card">
+              <p className="booking-guest"><strong>{booking.guestName}</strong></p>
+              <p className="booking-email">{booking.guestEmail}</p>
+              <p className="muted">Слот: {booking.date}-{booking.startTime}</p>
+              {booking.createdAt && (
+                <p className="muted">Создано: {formatCreatedAt(booking.createdAt)}</p>
+              )}
+            </li>
+          ))}
+        </ul>
+      ))}
     </section>
   );
 };

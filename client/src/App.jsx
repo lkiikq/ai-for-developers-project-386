@@ -5,15 +5,19 @@ import EventTypesPage from './pages/EventTypesPage.jsx';
 import BookEventTypePage from './pages/BookEventTypePage.jsx';
 import NewEventTypePage from './pages/NewEventTypePage.jsx';
 import OwnerBookingsPage from './pages/OwnerBookingsPage.jsx';
+import OwnerEventTypesPage from './pages/OwnerEventTypesPage.jsx';
 
+// Маршруты SPA (см. README, «Страницы и UX»): гость пишется через
+// /event-types, владелец — через /owner/*, * → редирект на /
 const App = () => (
   <Routes>
     <Route element={<Layout />}>
       <Route index element={<LandingPage />} />
       <Route path="event-types" element={<EventTypesPage />} />
       <Route path="event-types/:id" element={<BookEventTypePage />} />
-      <Route path="owner/event-types/new" element={<NewEventTypePage />} />
       <Route path="owner/bookings" element={<OwnerBookingsPage />} />
+      <Route path="owner/event-types" element={<OwnerEventTypesPage />} />
+      <Route path="owner/event-types/new" element={<NewEventTypePage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Route>
   </Routes>

@@ -1,13 +1,18 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { createEventType } from '../api/index.js';
 
-const initialForm = { title: '', description: '', durationMinutes: 30 };
+const DURATIONS = [30, 60, 90, 120];
+const FALLBACK_ERROR = 'Не удалось создать тип. Попробуйте ещё раз.';
 
-// Страница владельца: создание типа встречи (см. README, сценарий 1)
+// Новый тип встречи (/owner/event-types/new): форма с HTML5-валидацией,
+// текст ошибки сервера у формы, после успеха — редирект на список
+// (см. README, «Страницы и UX»)
 const NewEventTypePage = () => {
-  const [form, setForm] = useState(initialForm);
+  const navigate = useNavigate();
+  const [form, setForm] = useState({ title: '', description: '', durationMinutes: '30' });
   const [busy, setBusy] = useState(false);
-  const [feedback, setFeedback] = useState(null);
+  const [error, setError] = useState(null);
 
   const update = (field) => (event) => (
     setForm((current) => ({ ...current, [field]: event.target.value }))
@@ -16,29 +21,22 @@ const NewEventTypePage = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setBusy(true);
-    setFeedback(null);
+    setError(null);
     try {
-      const { data, error } = await createEventType({
+      const { error: apiError } = await createEventType({
         body: {
           title: form.title.trim(),
           description: form.description.trim(),
           durationMinutes: Number(form.durationMinutes),
         },
       });
-      if (error) {
-        setFeedback({
-          type: 'error',
-          text: 'Не удалось создать тип встречи. Проверьте данные.',
-        });
-      } else {
-        setFeedback({ type: 'success', text: `Тип встречи «${data.title}» создан.` });
-        setForm(initialForm);
+      if (apiError) {
+        setError(apiError.error ?? FALLBACK_ERROR);
+        return;
       }
+      navigate('/owner/event-types');
     } catch {
-      setFeedback({
-        type: 'error',
-        text: 'Не удалось создать тип встречи. Попробуйте ещё раз.',
-      });
+      setError(FALLBACK_ERROR);
     } finally {
       setBusy(false);
     }
@@ -52,8 +50,8 @@ const NewEventTypePage = () => {
           Название
           <input
             required
+            maxLength={100}
             value={form.title}
-            placeholder="Созвон на 30 минут"
             onChange={update('title')}
           />
         </label>
@@ -61,26 +59,26 @@ const NewEventTypePage = () => {
           Описание
           <textarea
             rows={3}
+            maxLength={500}
             value={form.description}
             onChange={update('description')}
           />
         </label>
         <label>
-          Длительность, минут
-          <input
-            required
-            type="number"
-            min={1}
-            step={1}
-            value={form.durationMinutes}
-            onChange={update('durationMinutes')}
-          />
+          Длительность
+          <select value={form.durationMinutes} onChange={update('durationMinutes')}>
+            {DURATIONS.map((minutes) => (
+              <option key={minutes} value={String(minutes)}>
+                {minutes} минут
+              </option>
+            ))}
+          </select>
         </label>
+        {error && <p className="message error">{error}</p>}
         <button type="submit" disabled={busy}>
-          {busy ? 'Сохраняем…' : 'Создать'}
+          {busy ? 'Отправка…' : 'Создать тип'}
         </button>
       </form>
-      {feedback && <p className={`message ${feedback.type}`}>{feedback.text}</p>}
     </section>
   );
 };

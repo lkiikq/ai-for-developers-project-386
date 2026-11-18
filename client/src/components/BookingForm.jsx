@@ -1,6 +1,9 @@
 import { useState } from 'react';
 
-const BookingForm = ({ busy, onSubmit }) => {
+// Форма подтверждения записи: «Имя», «Email», кнопка «Подтвердить запись»
+// (при отправке — «Отправка…»), текст ошибки сервера у формы
+// (см. README, «Страницы и UX»)
+const BookingForm = ({ busy, error, onSubmit }) => {
   const [guestName, setGuestName] = useState('');
   const [guestEmail, setGuestEmail] = useState('');
 
@@ -12,9 +15,10 @@ const BookingForm = ({ busy, onSubmit }) => {
   return (
     <form className="form" onSubmit={handleSubmit}>
       <label>
-        Ваше имя
+        Имя
         <input
           required
+          maxLength={100}
           value={guestName}
           onChange={(event) => setGuestName(event.target.value)}
         />
@@ -24,12 +28,14 @@ const BookingForm = ({ busy, onSubmit }) => {
         <input
           required
           type="email"
+          maxLength={254}
           value={guestEmail}
           onChange={(event) => setGuestEmail(event.target.value)}
         />
       </label>
-      <button type="submit" disabled={busy}>
-        {busy ? 'Бронируем…' : 'Подтвердить запись'}
+      {error && <p className="message error">{error}</p>}
+      <button type="submit" className="form-submit" disabled={busy}>
+        {busy ? 'Отправка…' : 'Подтвердить запись'}
       </button>
     </form>
   );
