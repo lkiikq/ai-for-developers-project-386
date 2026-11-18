@@ -161,7 +161,7 @@ cd client && npm run dev
 
 **Публичная ссылка: https://call-calendar-pmoq.onrender.com**
 
-Сервис `call-calendar` на [Render](https://render.com) (free-тариф, регион Oregon) собирается из корневого `Dockerfile` ветки `impl/call-calendar`. Приложение стартует в контейнере само (`CMD node server/src/index.js`) и слушает порт из переменной окружения `PORT`, которую задаёт платформа.
+Сервис `call-calendar` на [Render](https://render.com) (free-тариф, регион Oregon) собирается из корневого `Dockerfile` ветки `main`. Приложение стартует в контейнере само (`CMD node server/src/index.js`) и слушает порт из переменной окружения `PORT`, которую задаёт платформа.
 
 Авто-деплой по коммиту включён в настройках сервиса, но webhook при его создании через API не зарегистрировался, поэтому фактически новый коммит попадает в прод вручную: агентом через Render MCP (инструмент `trigger_deploy`) или кнопкой Deploy в дашборде.
 
