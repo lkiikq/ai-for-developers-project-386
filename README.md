@@ -196,6 +196,28 @@ cd client && npm run dev
 
 Через MCP агент создаёт сервис, запускает деплой, читает логи и метрики; фактический результат шага — сервис выше и проверенный по ссылке сценарий бронирования.
 
+### Подключение GitHub MCP (для работы с репозиторием)
+
+В том же `opencode.json` настроен официальный удалённый MCP-сервер GitHub (issues, PR, файлы репозитория). Секрета в файле нет — токен подставляется из переменной окружения `GITHUB_MCP_PAT`:
+
+```json
+"github": {
+  "type": "remote",
+  "url": "https://api.githubcopilot.com/mcp/",
+  "oauth": false,
+  "headers": { "Authorization": "Bearer {env:GITHUB_MCP_PAT}" }
+}
+```
+
+Порядок подключения:
+
+1. Получите GitHub PAT: создайте [новый токен](https://github.com/settings/tokens) (для этого репозитория достаточно scope `repo`) либо возьмите токен уже залогиненного `gh`: `gh auth token`.
+2. Положите его в переменную окружения `GITHUB_MCP_PAT` (Windows PowerShell: `setx GITHUB_MCP_PAT <токен>`; Linux/macOS: `export GITHUB_MCP_PAT=<токен>`).
+3. Перезапустите сервис OpenCode: `opencode service restart`.
+4. Проверка: `opencode mcp list` → `✓ github connected`.
+
+Как и у Render, OAuth-вход для этого сервера в OpenCode ненадёжен (GitHub не поддерживает dynamic client registration — [github/github-mcp-server#2344](https://github.com/github/github-mcp-server/issues/2344)), поэтому используется токен из переменной окружения: в репозиторий и в историю git он не попадает.
+
 ## Сценарии использования
 
 Два типа пользователей (без регистрации и авторизации): **владелец** настраивает и наблюдает, **гость** бронирует.
