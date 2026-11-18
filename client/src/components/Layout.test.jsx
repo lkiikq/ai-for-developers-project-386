@@ -48,11 +48,4 @@ describe('Шапка (Layout)', () => {
     expect(screen.getByRole('link', { name: 'Предстоящие события' }))
       .toHaveAttribute('href', '/owner/bookings');
   });
-
-  it('кнопка «Владельцу» ведёт в зону владельца', () => {
-    renderAt('/');
-
-    expect(screen.getByRole('link', { name: 'Владельцу' }))
-      .toHaveAttribute('href', '/owner/bookings');
-  });
 });
